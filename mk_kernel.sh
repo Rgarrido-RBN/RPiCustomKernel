@@ -15,7 +15,7 @@ done
 if [ "$1" == "help" ];
 then
     echo ">>> PLEASE SET BRANCH NAME OF KERNEL VERSION WITH -b flag"
-    echo ">>> Ex: ./mk_kernel -b 4.14.y"
+    echo ">>> Ex: ./mk_kernel -b 4.14"
     echo
     echo ">>> ENTER req ARGUMENT IN ORDER TO INSTALL REQUIREMENTS"
     echo ">>> Ex: ./mk_kernel req"
@@ -43,15 +43,11 @@ fi
 if [ -z "$BRANCH" ]; 
 then 
     echo "PLEASE SET BRANCH NAME OF KERNEL VERSION WITH -b flag"
-    echo "Ex: ./mk_kernel -b rpi-5.15.y"
+    echo "Ex: ./mk_kernel.sh -b 5.15"
     exit 1
 fi
 
-# Prerare directory where kernel will be built
-read -p '>>> Set destination dir for kernel source code: ' KERNEL_SOURCES
-read -p '>>> Now please set destination dir for kernel building files: ' DEST_DIR
+git clone --depth 1 --branch rpi-${BRANCH}.y https://github.com/raspberrypi/linux.git ${BRANCH}_kernel
 
-git clone --depth 1 --branch $BRANCH https://github.com/raspberrypi/linux.git $KERNEL_SOURCES
-
-sudo make -C $EXEC_DIR/$KERNEL_SOURCES ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- O=$EXEC_DIR/$DEST_DIR bcmrpi3_defconfig
-sudo make -C $EXEC_DIR/$KERNEL_SOURCES ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- O=$EXEC_DIR/$DEST_DIR -j4
+sudo make -C $EXEC_DIR/${BRANCH}_kernel ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- O=$EXEC_DIR/${BRANCH}_bo bcmrpi3_defconfig
+sudo make -C $EXEC_DIR/${BRANCH}_kernel ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- O=$EXEC_DIR/${BRANCH}_bo -j4

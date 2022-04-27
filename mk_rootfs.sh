@@ -1,14 +1,14 @@
 #/bin/bash
 set -e
 EXEC_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-DEST_DIR=4.14_bo
 export ARCH=arm64
 
-while getopts d:v: flag
+while getopts d:v:k: flag
 do
     case "${flag}" in
         d) DISTRO=${OPTARG};;
         v) VERSION=${OPTARG};;
+        k) KERNEL=${OPTARG};;
     esac
 done
 
@@ -18,7 +18,7 @@ then
     mkdir -p rootfs/$VERSION
     # Install kernel modules on the rootfs already built
     sudo tar xzvf ubuntu-base-$VERSION-base-arm64.tar.gz -C $EXEC_DIR/rootfs/$VERSION
-    sudo make -C $EXEC_DIR/rpi_kernel_4.14 ARCH=$ARCH CROSS_COMPILE=aarch64-linux-gnu- O=$EXEC_DIR/$DEST_DIR/ modules_install INSTALL_MOD_PATH=$EXEC_DIR/rootfs/$VERSION
+    sudo make -C $EXEC_DIR/${KERNEL}_kernel ARCH=$ARCH CROSS_COMPILE=aarch64-linux-gnu- O=$EXEC_DIR/${KERNEL}_bo/ modules_install INSTALL_MOD_PATH=$EXEC_DIR/rootfs/$VERSION
 
     # Remove unnecessary files from building and installation
     sudo find $EXEC_DIR/rootfs/$VERSION -name build | xargs sudo rm -rf
