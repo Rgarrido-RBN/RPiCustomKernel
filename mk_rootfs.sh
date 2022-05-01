@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 set -e
 EXEC_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 export ARCH=arm64
