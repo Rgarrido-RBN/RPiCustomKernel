@@ -1,0 +1,6 @@
+firmware
+linux
+buildoutput*
+modules_install.log
+rpi64.img
+ubuntu-base*

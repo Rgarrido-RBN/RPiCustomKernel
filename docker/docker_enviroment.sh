@@ -5,7 +5,7 @@ echo ">>>>>>>>>>>>>>>> AVAILABLE COMMANDS "
 echo
 echo "    docker_permision -->  Add permission to docker after installation, use it only if docker throws permission errors"
 echo "    docker_build -->  BUILD docker image"
-echo "    docker_build -->  RUN docker image"
+echo "    docker_run -->  RUN docker image"
 # Add permission to docker after installation, use it only if you need it
 docker_permision ()
 {
