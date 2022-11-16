@@ -34,7 +34,7 @@ $EXEC_DIR/
     device-tree-compiler \
     pkg-config \
     ncurses-dev \
-    libssl-dev"
+    libssl-dev -y"
     exit 1
 fi
 

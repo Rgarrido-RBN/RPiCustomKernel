@@ -15,7 +15,6 @@ if [ ! -n "${KERNEL}" ]; then
     export KERNEL=kernel8
 fi
 
-
 # Clone sources
 if [ ! -d firmware ]; then
     git clone --depth 1 https://github.com/raspberrypi/firmware.git
@@ -61,14 +60,41 @@ else
     fi
 fi
 
+MNTRAMDISK=/mnt/ramdisk/
+MNTROOTFS=/mnt/rpi-arm64-rootfs/
+MNTBOOT=${MNTROOTFS}boot/
+IMGFILE=${MNTRAMDISK}rpi64.img
 
+################## Final function #####################
+finish () {
+
+  echo "********************* FINISH **********************"
+  cd ${WRKDIR}
+  sudo sync
+  sudo umount ${MNTROOTFS}proc || true
+  sudo umount ${MNTROOTFS}dev/pts || true
+  sudo umount ${MNTROOTFS}dev || true
+  sudo umount ${MNTROOTFS}sys || true
+  sudo umount ${MNTROOTFS}tmp || true
+  sudo umount ${MNTBOOT} || true
+  sudo umount ${MNTROOTFS} || true
+  sudo kpartx -dvs ${IMGFILE} || true
+  sudo rmdir ${MNTROOTFS} || true
+  mv ${IMGFILE} . || true
+  sudo umount ${MNTRAMDISK} || true
+  sudo rmdir ${MNTRAMDISK} || true
+}
+
+trap finish EXIT
 sudo mkdir -p ${MNTRAMDISK}
-sudo mount -t tmpfs -o size=3g tmpfs ${MNTRAMDISK}
+sudo mount -t tmpfs -o size=4g tmpfs ${MNTRAMDISK}
 
-qemu-img create ${IMGFILE} 2G
+qemu-img create ${IMGFILE} 3G
 parted ${IMGFILE} --script -- mklabel msdos
 parted ${IMGFILE} --script -- mkpart primary fat32 2048s 264191s
 parted ${IMGFILE} --script -- mkpart primary ext4 264192s -1s
+
+#### Se puede ver como funciona el device mapper con dmsetup
 
 LOOPDEVS=$(sudo kpartx -avs ${IMGFILE} | awk '{print $3}')
 LOOPDEVBOOT=/dev/mapper/$(echo ${LOOPDEVS} | awk '{print $1}')
@@ -84,7 +110,7 @@ sudo e2label ${LOOPDEVROOTFS} RpiUbuntu
 sudo mkdir -p ${MNTROOTFS}
 sudo mount ${LOOPDEVROOTFS} ${MNTROOTFS}
 
-sudo tar -C ${MNTROOTFS} -xf ${ROOTFS}
+sudo tar -xf ${ROOTFS} -C ${MNTROOTFS} 
 
 sudo mount ${LOOPDEVBOOT} ${MNTBOOT}
 

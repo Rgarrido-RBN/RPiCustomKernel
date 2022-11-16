@@ -17,12 +17,17 @@ docker_permision ()
 # Build docker image
 docker_build ()
 {
-    docker rmi $CONTAINER_NAME || true
-    docker build -t rpi_enviroment:1 -f $DOCKER_DIR/Dockerfile $DOCKER_DIR
+    #docker rmi -f rpi_enviroment || true
+    docker build --build-arg USERNAME="$(id -un)" \
+                 --build-arg GROUPNAME="$(id -gn)" \
+                 --build-arg USERID="$(id -u)" \
+                 --build-arg GROUPID="$(id -g)" \
+                 -t rpi_enviroment $DOCKER_DIR/  \
+    #docker build -t rpi_enviroment:1 -f $DOCKER_DIR/Dockerfile $DOCKER_DIR
 }
 
 # Run docker image
 docker_run ()
 {
-    docker run --privileged -it -v $DOCKER_DIR/../:/root rpi_enviroment:1 /bin/bash
+    docker run --privileged -it -v $DOCKER_DIR/../:/rbn rpi_enviroment /bin/bash
 }

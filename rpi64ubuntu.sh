@@ -124,6 +124,7 @@ MNTBOOT=${MNTROOTFS}boot/
 IMGFILE=${MNTRAMDISK}rpi64.img
 
 finish () {
+    echo "********************* FINISH **********************"
   cd ${WRKDIR}
   sudo sync
   sudo umount ${MNTROOTFS}proc || true
